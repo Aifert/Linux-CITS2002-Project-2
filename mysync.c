@@ -14,13 +14,20 @@ int main(int argc, char *argv[])
     optind++;
     char *dest_dir = argv[optind];
 
-    if (getEntryCount(dest_dir) > getEntryCount(src_dir))
+    if (getEntryCount(dest_dir, flags) > getEntryCount(src_dir, flags))
     {
         char *temp = src_dir;
         src_dir = dest_dir;
         dest_dir = temp;
     }
 
+    if (flags->flag_v)
+    {
+        printf("Initializing Synchronization......\n");
+        printf("---------------------------------------------------\n");
+        printf("Source : '%s' , Destination : '%s'\n", src_dir, dest_dir);
+        printf("Comparing top level '%s' to '%s'\n", src_dir, dest_dir);
+    }
     int file_count = 0;
     struct FILEINFO *file_info = process_file(src_dir, dest_dir, flags, &file_count);
 
@@ -29,6 +36,10 @@ int main(int argc, char *argv[])
 
     if (completion == 0)
     {
+        if (flags->flag_v)
+        {
+            printf("%i files to be synced.\n", file_count);
+        }
         printf("Synchronization complete.\n");
     }
 

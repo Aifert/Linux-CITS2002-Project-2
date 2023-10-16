@@ -1,6 +1,6 @@
 #include "processfile.h"
 
-int match(const char *file_path, const char *filename, long long size)
+int match(const char *file_path, long long size)
 {
     struct stat buffer;
 
@@ -10,7 +10,7 @@ int match(const char *file_path, const char *filename, long long size)
     }
 
     // Check if the size and modification time match
-    if (size == buffer.st_size && filename[0] != '.')
+    if (size == buffer.st_size)
     {
         return 1; // File exists in the destination directory and matches all criteria
     }
@@ -35,7 +35,7 @@ int searchANDmatch(const char *dest_dir, const char *filename, long long size)
     {
         snprintf(file_path, sizeof(file_path), "%s/%s", dest_dir, filename);
 
-        if (match(file_path, filename, size))
+        if (match(file_path, size))
         {
             return 1;
         }
@@ -45,7 +45,7 @@ int searchANDmatch(const char *dest_dir, const char *filename, long long size)
     return 0;
 }
 
-int getEntryCount(const char *dir)
+int getEntryCount(const char *dir, FLAG *flags)
 {
     int file_count = 0;
     DIR *dirp = opendir(dir);
@@ -129,11 +129,11 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
             if (searchANDmatch(dest_dir, entry->d_name, statbuf.st_size))
             {
                 add_file = 0;
-                process_v(flags, 0, dest_path, entry);
+                process_v(flags, add_file, entry);
             }
             else
             {
-                process_v(flags, add_file, dest_path, entry);
+                process_v(flags, add_file, entry);
             }
         }
 

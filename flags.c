@@ -87,19 +87,17 @@ void process_n(const char *src_dir, const char *dest_dir, struct FILEINFO *file_
     printf("--------------------------------------------------------------------------------\n");
 }
 
-void process_v(FLAG *flags, int accept, const char *dest_path, struct dirent *entry)
+void process_v(FLAG *flags, int accept, struct dirent *entry)
 {
     if (flags->flag_v || flags->flag_n)
     {
         if (accept)
         {
-            printf("%s does NOT already exist\n", dest_path);
-            printf("ACCEPTING file %s\n", entry->d_name);
+            printf("ACCEPTING file '%s'\n", entry->d_name);
         }
         else
         {
-            printf("%s does already exist\n", dest_path);
-            printf("SKIPPING file %s\n", entry->d_name);
+            printf("SKIPPING file '%s'\n", entry->d_name);
         }
     }
 }
