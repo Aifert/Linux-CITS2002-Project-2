@@ -73,8 +73,8 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
     struct dirent *entry;
     struct FILEINFO *file_info = NULL;
 
-    char src_path[512];
-    char dest_path[512];
+    char src_path[256];
+    char dest_path[256];
     char buffer[1024];
 
     if ((dir = opendir(src_dir)) == NULL)
@@ -88,6 +88,10 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
     {
         sprintf(buffer, "%s", entry->d_name);
 
+        if (strcmp(buffer, ".") == 0 || strcmp(buffer, "..") == 0)
+        {
+            continue;
+        }
         if (buffer[0] == '.')
         {
             if (!process_a(flags))
@@ -129,7 +133,7 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
             if (searchANDmatch(dest_dir, entry->d_name, statbuf.st_size))
             {
                 add_file = 0;
-                process_v(flags, add_file, entry);
+                process_v(flags, 0, entry);
             }
             else
             {
