@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     optind++;
     char *dest_dir = argv[optind];
 
-    printf("hello world from new branch");
+    printf("THIS IS FUCKIN SICKKKKKKK");
 
     if (getEntryCount(dest_dir, flags) > getEntryCount(src_dir, flags))
     {
