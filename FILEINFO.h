@@ -3,6 +3,9 @@
 
 #include "headers.h"
 
+#define MAX_FILENAME_LENGTH 512
+#define MAX_BUFFER_LENGTH 1024
+
 struct FILEINFO
 {
     char *filename;
