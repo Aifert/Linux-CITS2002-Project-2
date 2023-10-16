@@ -1,6 +1,12 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 
+#define MAX_FILENAME_LENGTH 512
+#define MAX_BUFFER_LENGTH 1024
+
+extern int DIR_COUNT;
+extern int FILE_COUNT;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

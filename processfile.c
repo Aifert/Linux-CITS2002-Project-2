@@ -45,6 +45,37 @@ int searchANDmatch(const char *dest_dir, const char *filename, long long size)
     return 0;
 }
 
+int checkTime(const char *src_path, const char *dest_path)
+{
+    struct stat src_statbuf;
+    struct stat dest_statbuf;
+
+    if (stat(src_path, &src_statbuf) == -1)
+    {
+        perror("ERROR GETTING SOURCE FILE INFORMATION");
+        return 0;
+    }
+
+    if (stat(dest_path, &dest_statbuf) == -1)
+    {
+        perror("ERROR GETTING DEST FILE INFORMATION");
+        return 0;
+    }
+
+    if (dest_statbuf.st_mtime > src_statbuf.st_mtime)
+    {
+        return 3;
+    }
+    else if (dest_statbuf.st_mtime < src_statbuf.st_mtime)
+    {
+        return 2;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
 int getEntryCount(const char *dir, FLAG *flags)
 {
     int file_count = 0;
@@ -67,15 +98,15 @@ int getEntryCount(const char *dir, FLAG *flags)
     return file_count;
 }
 
-struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *flags, int *file_count)
+struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *flags, int *total_count)
 {
     DIR *dir;
     struct dirent *entry;
     struct FILEINFO *file_info = NULL;
 
-    char src_path[256];
-    char dest_path[256];
-    char buffer[1024];
+    char src_path[MAX_FILENAME_LENGTH];
+    char dest_path[MAX_FILENAME_LENGTH];
+    char buffer[MAX_BUFFER_LENGTH];
 
     if ((dir = opendir(src_dir)) == NULL)
     {
@@ -132,17 +163,45 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
         {
             if (searchANDmatch(dest_dir, entry->d_name, statbuf.st_size))
             {
-                add_file = 0;
-                process_v(flags, 0, entry);
+                if (checkTime(src_path, dest_path) == 3)
+                {
+                    if (stat(dest_path, &statbuf) == -1)
+                    {
+                        perror("ERROR GETTING FILE INFORMATION");
+                        printf("Dest : '%s' is newer than Source : '%s'\n", dest_path, src_path);
+                        add_file = 1;
+                        process_v(flags, add_file, entry);
+                    }
+                }
+                else if (checkTime(src_path, dest_path) == 2)
+                {
+                    printf("Source : '%s' is newer than Dest : '%s'\n", src_path, dest_path);
+                    add_file = 1;
+                    process_v(flags, add_file, entry);
+                }
+                else if ((checkTime(src_path, dest_path) == 1))
+                {
+                    add_file = 0;
+                    process_v(flags, add_file, entry);
+                }
             }
             else
             {
+                add_file = 1;
                 process_v(flags, add_file, entry);
             }
         }
 
         if (add_file)
         {
+            if (S_ISDIR(statbuf.st_mode))
+            {
+                DIR_COUNT++;
+            }
+            if (S_ISREG(statbuf.st_mode))
+            {
+                FILE_COUNT++;
+            }
             file_info = realloc(file_info, (count + 1) * sizeof(struct FILEINFO));
             if (file_info == NULL)
             {
@@ -158,6 +217,6 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
     }
 
     closedir(dir);
-    *file_count = count;
+    *total_count = count;
     return file_info;
 }
