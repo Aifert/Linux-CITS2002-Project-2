@@ -3,6 +3,32 @@
 int DIR_COUNT = 0;
 int FILE_COUNT = 0;
 
+void fillDir(char *argv[], FLAG *flags, int num_dir)
+{
+    for (int i = 0; i < num_dir; i++)
+    {
+        directories[i].dir_name = argv[optind + i];
+        directories[i].entry_count = getEntryCount(argv[optind + i], flags);
+    }
+}
+
+int maxEntry(int num_dir)
+{
+    int max_entry = 0;
+    int max_index = 0;
+
+    for (int i = 0; i < num_dir; i++)
+    {
+        if (directories[i].entry_count >= max_entry)
+        {
+            max_entry = directories[i].entry_count;
+            max_index = i;
+        }
+    }
+
+    return max_index;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 3)
@@ -13,37 +39,52 @@ int main(int argc, char *argv[])
 
     FLAG *flags = checkflag(argc, argv);
 
-    char *src_dir = argv[optind];
-    optind++;
-    char *dest_dir = argv[optind];
+    int num_dir = argc - optind;
+    int x = 0;
 
-    if (getEntryCount(dest_dir, flags) > getEntryCount(src_dir, flags))
+    fillDir(argv, flags, num_dir);
+
+    int max_index = maxEntry(num_dir);
+
+    while (num_dir != 0)
     {
-        char *temp = src_dir;
-        src_dir = dest_dir;
-        dest_dir = temp;
-    }
+        if (x == max_index)
+        {
+            x++;
+            num_dir--;
+            continue;
+        }
 
-    if (flags->flag_v)
-    {
-        printf("Initializing Synchronization......\n");
-        printf("---------------------------------------------------\n");
-        printf("Source : '%s' , Destination : '%s'\n", src_dir, dest_dir);
-        printf("Comparing top level '%s' to '%s'\n", src_dir, dest_dir);
-    }
-    int total_count = 0;
-    struct FILEINFO *file_info = process_file(src_dir, dest_dir, flags, &total_count);
+        char *src_dir = directories[max_index].dir_name;
+        char *dest_dir = directories[x].dir_name;
 
-    int completion;
-    completion = sync_directories(file_info, total_count, src_dir, dest_dir, flags);
-
-    if (completion == 0)
-    {
         if (flags->flag_v)
         {
-            printf("%i files, %i directories.\n", FILE_COUNT, DIR_COUNT);
+            printf("---------------------------------------------------\n");
+            printf("Initializing Synchronization......\n");
+            printf("---------------------------------------------------\n");
+            printf("Source : '%s' , Destination : '%s'\n", src_dir, dest_dir);
+            printf("Comparing top level '%s' to '%s'\n", src_dir, dest_dir);
         }
-        printf("Synchronization complete.\n");
+
+        int total_count = 0;
+        struct FILEINFO *file_info = process_file(src_dir, dest_dir, flags, &total_count);
+
+        int completion;
+        completion = sync_directories(file_info, total_count, src_dir, dest_dir, flags);
+
+        if (completion == 0)
+        {
+            if (flags->flag_v)
+            {
+                printf("%i files, %i directories.\n", FILE_COUNT, DIR_COUNT);
+            }
+            printf("Synchronization complete.\n");
+        }
+        x++;
+        num_dir--;
+        DIR_COUNT = 0;
+        FILE_COUNT = 0;
     }
 
     return 0;
