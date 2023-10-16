@@ -7,24 +7,24 @@ int exists(const char *path)
 }
 
 // Function to recursively synchronize directories
-int sync_directories(struct FILEINFO *file_info, int file_count, const char *src, const char *dest, FLAG *flags)
+int sync_directories(struct FILEINFO *file_info, int total_count, const char *src, const char *dest, FLAG *flags)
 {
     char src_path[256];
     char dest_path[256];
 
     struct FILEINFO *current_file = file_info;
 
-    if (file_count == 0)
+    if (total_count == 0)
     {
         if (flags->flag_v)
         {
-            printf("%i files to be synced.\n", file_count);
+            printf("%i files to be synced.\n", total_count);
             printf("Exiting with success.\n");
         }
         return 0;
     }
 
-    for (int i = 0; i < file_count; i++)
+    for (int i = 0; i < total_count; i++)
     {
         // Construct source and destination paths
         snprintf(src_path, sizeof(src_path), "%s/%s", src, current_file->filename);
@@ -51,7 +51,7 @@ int sync_directories(struct FILEINFO *file_info, int file_count, const char *src
             {
                 if (flags->flag_v)
                 {
-                    printf("Recursively scanning subdirectory '%s'\n", src_path);
+                    printf("--> Recursively scanning subdirectory '%s'\n", src_path);
                 }
                 int temp_file_count = 0;
                 struct FILEINFO *temp_file = process_file(src_path, dest_path, flags, &temp_file_count);
@@ -72,7 +72,7 @@ int sync_directories(struct FILEINFO *file_info, int file_count, const char *src
         {
             if (flags->flag_n)
             {
-                process_n(src, dest, file_info, file_count);
+                process_n(src, dest, file_info, total_count);
                 return 0;
             }
             else
@@ -108,7 +108,6 @@ int sync_directories(struct FILEINFO *file_info, int file_count, const char *src
 
                 if (flags->flag_p)
                 {
-                    printf("HELLO WORLD\n");
                     struct utimbuf times;
                     times.modtime = current_file->modification_time;
                     if (utime(dest_path, &times) == -1)
