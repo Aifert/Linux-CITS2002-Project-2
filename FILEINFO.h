@@ -8,6 +8,7 @@ struct FILEINFO
     char *filename;
     time_t modification_time;
     long long size;
+    int newer;
 };
 
 #endif

@@ -115,6 +115,7 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
     }
 
     int count = 0;
+    int newer = 0;
     while ((entry = readdir(dir)) != NULL)
     {
         sprintf(buffer, "%s", entry->d_name);
@@ -171,6 +172,7 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
                         return NULL;
                     }
                     printf("Dest : '%s' is newer than Source : '%s'\n", dest_path, src_path);
+                    newer = 1;
                     add_file = 1;
                     process_v(flags, add_file, entry);
                 }
@@ -209,9 +211,11 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
                 perror("ERROR ALLOCATING MEMORY FOR FILE_INFO");
                 return NULL;
             }
+
             file_info[count].filename = strdup(entry->d_name);
             file_info[count].modification_time = statbuf.st_mtime;
             file_info[count].size = statbuf.st_size;
+            file_info[count].newer = newer;
             count++;
         }
     }

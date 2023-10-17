@@ -13,6 +13,7 @@ int sync_directories(struct FILEINFO *file_info, int total_count, const char *sr
     char dest_path[256];
 
     struct FILEINFO *current_file = file_info;
+    struct utimbuf times;
 
     if (total_count == 0)
     {
@@ -29,6 +30,12 @@ int sync_directories(struct FILEINFO *file_info, int total_count, const char *sr
         // Construct source and destination paths
         snprintf(src_path, sizeof(src_path), "%s/%s", src, current_file->filename);
         snprintf(dest_path, sizeof(dest_path), "%s/%s", dest, current_file->filename);
+
+        if (current_file->newer)
+        {
+            snprintf(src_path, sizeof(src_path), "%s/%s", dest, current_file->filename);
+            snprintf(dest_path, sizeof(dest_path), "%s/%s", src, current_file->filename);
+        }
 
         struct stat statbuf;
         if (stat(src_path, &statbuf) == -1)
@@ -51,7 +58,7 @@ int sync_directories(struct FILEINFO *file_info, int total_count, const char *sr
             {
                 if (flags->flag_v)
                 {
-                    printf("--> Recursively scanning subdirectory '%s'\n", src_path);
+                    printf("==> Recursively scanning subdirectory '%s'\n", src_path);
                 }
                 int temp_file_count = 0;
                 struct FILEINFO *temp_file = process_file(src_path, dest_path, flags, &temp_file_count);
@@ -59,7 +66,6 @@ int sync_directories(struct FILEINFO *file_info, int total_count, const char *sr
             }
             if (flags->flag_p)
             {
-                struct utimbuf times;
                 times.modtime = current_file->modification_time; // Use the provided modification time
                 if (utime(dest_path, &times) == -1)
                 {
