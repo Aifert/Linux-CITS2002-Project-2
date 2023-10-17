@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         if (flags->flag_v)
         {
             printf("---------------------------------------------------\n");
-            printf("Initializing Synchronization......\n");
+            printf("Initializing Synchronization for %s......\n", dest_dir);
             printf("---------------------------------------------------\n");
             printf("Source : '%s' , Destination : '%s'\n", src_dir, dest_dir);
             printf("Comparing top level '%s' to '%s'\n", src_dir, dest_dir);
