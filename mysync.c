@@ -3,6 +3,24 @@
 int DIR_COUNT = 0;
 int FILE_COUNT = 0;
 
+struct DirectoryInfo *directories = NULL;
+
+void initializeDirectories(int num_dir)
+{
+    directories = (struct DirectoryInfo *)malloc(num_dir * sizeof(struct DirectoryInfo));
+
+    if (directories == NULL)
+    {
+        printf("MEMORY ALLOCATION FAILED. \n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void cleanDirectories()
+{
+    free(directories);
+}
+
 void fillDir(char *argv[], FLAG *flags, int num_dir)
 {
     for (int i = 0; i < num_dir; i++)
@@ -42,7 +60,13 @@ int main(int argc, char *argv[])
     int num_dir = argc - optind;
     int x = 0;
 
+    initializeDirectories(num_dir);
+
     fillDir(argv, flags, num_dir);
+    if (flags->flag_v)
+    {
+        printf("Created space to sync %i directories. \n", num_dir);
+    }
 
     int max_index = maxEntry(num_dir);
 
@@ -87,5 +111,6 @@ int main(int argc, char *argv[])
         FILE_COUNT = 0;
     }
 
+    cleanDirectories();
     return 0;
 }

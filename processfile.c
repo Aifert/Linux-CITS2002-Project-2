@@ -168,10 +168,11 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
                     if (stat(dest_path, &statbuf) == -1)
                     {
                         perror("ERROR GETTING FILE INFORMATION");
-                        printf("Dest : '%s' is newer than Source : '%s'\n", dest_path, src_path);
-                        add_file = 1;
-                        process_v(flags, add_file, entry);
+                        return NULL;
                     }
+                    printf("Dest : '%s' is newer than Source : '%s'\n", dest_path, src_path);
+                    add_file = 1;
+                    process_v(flags, add_file, entry);
                 }
                 else if (checkTime(src_path, dest_path) == 2)
                 {
@@ -208,7 +209,6 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
                 perror("ERROR ALLOCATING MEMORY FOR FILE_INFO");
                 return NULL;
             }
-
             file_info[count].filename = strdup(entry->d_name);
             file_info[count].modification_time = statbuf.st_mtime;
             file_info[count].size = statbuf.st_size;

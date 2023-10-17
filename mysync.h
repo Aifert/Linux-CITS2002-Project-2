@@ -5,13 +5,13 @@
 #include "processfile.h"
 #include "flags.h"
 
-#define MAX_DIRECTORIES 4
-
-struct
+struct DirectoryInfo
 {
     char *dir_name;
     int entry_count;
-} directories[MAX_DIRECTORIES];
+};
+
+void initializeDirectories(int num_dir);
 
 void fillDir(char *argv[], FLAG *flags, int num_dir);
 

@@ -21,7 +21,7 @@ int sync_directories(struct FILEINFO *file_info, int total_count, const char *sr
             printf("%i files to be synced.\n", total_count);
             printf("Exiting with success.\n");
         }
-        return 0;
+        return 1;
     }
 
     for (int i = 0; i < total_count; i++)
