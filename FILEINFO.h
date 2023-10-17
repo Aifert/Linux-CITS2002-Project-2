@@ -5,10 +5,10 @@
 
 struct FILEINFO
 {
-    char *filename;
-    time_t modification_time;
-    long long size;
-    int newer;
+    char *filename;           //  Filename to be synced
+    time_t modification_time; //  Modification time of file to be synced
+    long long size;           //  Size of file to be synced
+    int newer;                //  1 if newest, 0 if not
 };
 
 #endif
