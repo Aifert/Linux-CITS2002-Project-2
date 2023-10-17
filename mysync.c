@@ -1,52 +1,15 @@
 #include "mysync.h"
 
-int DIR_COUNT = 0;
-int FILE_COUNT = 0;
+int DIR_COUNT = 0;  // Initialise global DIR_COUNT variable
+int FILE_COUNT = 0; // Initialise global FILE_COUNT variable
 
-struct DirectoryInfo *directories = NULL;
-
-void initializeDirectories(int num_dir)
-{
-    directories = (struct DirectoryInfo *)malloc(num_dir * sizeof(struct DirectoryInfo));
-
-    if (directories == NULL)
-    {
-        printf("MEMORY ALLOCATION FAILED. \n");
-        exit(EXIT_FAILURE);
-    }
-}
-
-void cleanDirectories()
-{
-    free(directories);
-}
-
-void fillDir(char *argv[], FLAG *flags, int num_dir)
-{
-    for (int i = 0; i < num_dir; i++)
-    {
-        directories[i].dir_name = argv[optind + i];
-        directories[i].entry_count = getEntryCount(argv[optind + i], flags);
-    }
-}
-
-int maxEntry(int num_dir)
-{
-    int max_entry = 0;
-    int max_index = 0;
-
-    for (int i = 0; i < num_dir; i++)
-    {
-        if (directories[i].entry_count >= max_entry)
-        {
-            max_entry = directories[i].entry_count;
-            max_index = i;
-        }
-    }
-
-    return max_index;
-}
-
+/**
+ * CITS2002 Project 2
+ * @author Aifert Yet 23455873
+ *
+ * The goal of this project is to design and develop a command-line utility program,
+ * named mysync, to synchronise the contents of two or more directories.
+ */
 int main(int argc, char *argv[])
 {
     if (argc < 3)
@@ -60,28 +23,30 @@ int main(int argc, char *argv[])
     int num_dir = argc - optind;
     int x = 0;
 
-    initializeDirectories(num_dir);
+    struct DIRECTORYINFO *directories = NULL; // Initialise array to hold directories given at command line
 
-    fillDir(argv, flags, num_dir);
+    initializeDirectories(&directories, num_dir); // Allocate memory to directories struct
+
+    fillDir(argv, directories, flags, num_dir); // Fill directories struct
 
     if (flags->flag_v || flags->flag_n)
     {
-        printf("Created space to sync %i directories. \n", num_dir);
+        printf("Created space to sync %i directories. \n", num_dir); // Verbose output
     }
 
-    int max_index = maxEntry(num_dir);
+    int max_index = maxEntry(directories, num_dir); // Find index of max entry
 
     while (num_dir != 0)
     {
-        if (x == max_index)
+        if (x == max_index) // x is the index of max entry
         {
             x++;
             num_dir--;
             continue;
         }
 
-        char *src_dir = directories[max_index].dir_name;
-        char *dest_dir = directories[x].dir_name;
+        char *src_dir = directories[max_index].dir_name; // Make pointer to name of source directory
+        char *dest_dir = directories[x].dir_name;        // Make pointer to name of destination directory
 
         if (flags->flag_v || flags->flag_n)
         {
@@ -98,6 +63,7 @@ int main(int argc, char *argv[])
         int completion;
         completion = sync_directories(file_info, total_count, src_dir, dest_dir, flags);
 
+        // Synced successfully
         if (completion == 0)
         {
             if (flags->flag_v || flags->flag_n)
@@ -108,10 +74,11 @@ int main(int argc, char *argv[])
         }
         x++;
         num_dir--;
-        DIR_COUNT = 0;
-        FILE_COUNT = 0;
+        DIR_COUNT = 0;  // Reset
+        FILE_COUNT = 0; // Reset
     }
 
-    cleanDirectories();
+    cleanDirectories(directories); // Free allocated memory
+    free(flags);
     return 0;
 }

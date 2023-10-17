@@ -1,20 +1,9 @@
 #ifndef MYSYNC_H
 #define MYSYNC_H
 
-#include "sync.h"
-#include "processfile.h"
-#include "flags.h"
-
-struct DirectoryInfo
-{
-    char *dir_name;
-    int entry_count;
-};
-
-void initializeDirectories(int num_dir);
-
-void fillDir(char *argv[], FLAG *flags, int num_dir);
-
-int maxEntry(int num_dir);
+#include "sync.h"        //Include sync.h header file
+#include "processfile.h" //Include processfile.h header file
+#include "flags.h"       //Include flags.h header file
+#include "processdir.h"  //Include processdir.h header file
 
 #endif

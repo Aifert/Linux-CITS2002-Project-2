@@ -1,11 +1,11 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 
-#define MAX_FILENAME_LENGTH 512
-#define MAX_BUFFER_LENGTH 1024
+#define MAX_FILENAME_LENGTH 512 // Declare MAX FILENAME LENGTH
+#define MAX_BUFFER_LENGTH 1024  // Declare MAX BUFFER LENGTH
 
-extern int DIR_COUNT;
-extern int FILE_COUNT;
+extern int DIR_COUNT;  // Global directory count variable
+extern int FILE_COUNT; // Global file count variable
 
 #include <stdio.h>
 #include <stdlib.h>
