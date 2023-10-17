@@ -49,25 +49,52 @@ char *glob2regex(char *glob)
 	return re;
 }
 
-int matchRegex(char *globPattern, const char *filename)
+int matchRegex(FLAG *flags, const char *filename, int mode)
 {
-	char *regexPattern = glob2regex(globPattern);
+	char *globPattern;
+	int pattern_count;
+	char **patterns;
 
-	if (regexPattern != NULL)
+	if (mode == 1)
 	{
-		regex_t regex;
-		if (regcomp(&regex, regexPattern, 0) == 0)
-		{
-			if (regexec(&regex, filename, 0, NULL, 0) == 0)
-			{
-				return 1;
-			}
-			regfree(&regex);
-		}
+		pattern_count = flags->pattern_i_count;
+		patterns = flags->patterns_i;
+	}
+	else if (mode == 0)
+	{
+		pattern_count = flags->pattern_o_count;
+		patterns = flags->patterns_o;
 	}
 	else
 	{
-		free(regexPattern);
+		return 0; // Invalid mode
 	}
+
+	for (int i = 0; i < pattern_count; i++)
+	{
+		globPattern = patterns[i];
+		char *regexPattern = glob2regex(globPattern);
+
+		if (regexPattern != NULL)
+		{
+			regex_t regex;
+			if (regcomp(&regex, regexPattern, 0) == 0)
+			{
+				if (regexec(&regex, filename, 0, NULL, 0) == 0)
+				{
+					regfree(&regex);
+					free(regexPattern);
+					if (flags->flag_v)
+					{
+						printf("Matches '%s'\n", patterns[i]);
+					}
+					return 1;
+				}
+				regfree(&regex);
+			}
+			free(regexPattern);
+		}
+	}
+
 	return 0;
 }

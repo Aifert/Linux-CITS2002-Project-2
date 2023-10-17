@@ -63,7 +63,8 @@ int main(int argc, char *argv[])
     initializeDirectories(num_dir);
 
     fillDir(argv, flags, num_dir);
-    if (flags->flag_v)
+
+    if (flags->flag_v || flags->flag_n)
     {
         printf("Created space to sync %i directories. \n", num_dir);
     }
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
         char *src_dir = directories[max_index].dir_name;
         char *dest_dir = directories[x].dir_name;
 
-        if (flags->flag_v)
+        if (flags->flag_v || flags->flag_n)
         {
             printf("---------------------------------------------------\n");
             printf("Initializing Synchronization for %s......\n", dest_dir);
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
 
         if (completion == 0)
         {
-            if (flags->flag_v)
+            if (flags->flag_v || flags->flag_n)
             {
                 printf("%i files, %i directories.\n", FILE_COUNT, DIR_COUNT);
             }

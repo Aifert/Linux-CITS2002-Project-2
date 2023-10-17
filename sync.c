@@ -42,7 +42,7 @@ int sync_directories(struct FILEINFO *file_info, int total_count, const char *sr
         {
             printf("ERROR HANDLER 2\n");
             perror("ERROR GETTING FILE INFORMATION");
-            return 0;
+            return 1;
         }
         if (S_ISDIR(statbuf.st_mode))
         {
@@ -130,6 +130,10 @@ int sync_directories(struct FILEINFO *file_info, int total_count, const char *sr
             }
         }
         current_file++;
+    }
+    if (flags->flag_v)
+    {
+        process_n(src, dest, file_info, total_count);
     }
     return 0;
 }

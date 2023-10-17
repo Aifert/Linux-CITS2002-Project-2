@@ -146,7 +146,7 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
 
         if (flags->flag_i)
         {
-            if (matchRegex(flags->pattern_i, entry->d_name))
+            if (matchRegex(flags, entry->d_name, 1))
             {
                 add_file = 0;
             }
@@ -154,7 +154,7 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
 
         if (flags->flag_o)
         {
-            if (!matchRegex(flags->pattern_o, entry->d_name))
+            if (!matchRegex(flags, entry->d_name, 0))
             {
                 add_file = 0;
             }
@@ -171,14 +171,20 @@ struct FILEINFO *process_file(const char *src_dir, const char *dest_dir, FLAG *f
                         perror("ERROR GETTING FILE INFORMATION");
                         return NULL;
                     }
-                    printf("Dest : '%s' is newer than Source : '%s'\n", dest_path, src_path);
+                    if (flags->flag_v)
+                    {
+                        printf("Dest : '%s' is newer than Source : '%s'\n", dest_path, src_path);
+                    }
                     newer = 1;
                     add_file = 1;
                     process_v(flags, add_file, entry);
                 }
                 else if (checkTime(src_path, dest_path) == 2)
                 {
-                    printf("Source : '%s' is newer than Dest : '%s'\n", src_path, dest_path);
+                    if (flags->flag_v)
+                    {
+                        printf("Source : '%s' is newer than Dest : '%s'\n", src_path, dest_path);
+                    }
                     add_file = 1;
                     process_v(flags, add_file, entry);
                 }
